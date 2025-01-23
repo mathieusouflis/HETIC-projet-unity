@@ -5,6 +5,7 @@ using System.Text.Json;
 using PimDeWitte.UnityMainThreadDispatcher;
 using UnityEngine;
 using SocketIOClient;
+using Unity.VisualScripting;
 
 public class WS : MonoBehaviour
 {
@@ -58,12 +59,12 @@ public class WS : MonoBehaviour
                                                         {
                                                             Debug.Log("x");
 
-                                                            cameraController.RotateX(newCordSent.GetSingle());
+                                                            cameraController.RotateX(- newCordSent.GetSingle());
                                                         }
                                                         else if (axeSent.GetString() == "y")
                                                         {
                                                             Debug.Log("y");
-                                                            cameraController.RotateY(newCordSent.GetSingle());
+                                                            cameraController.RotateY(- newCordSent.GetSingle());
                                                         }
                                                     }
                                                 }
@@ -211,7 +212,14 @@ public class WS : MonoBehaviour
 
     public async void SendMessage(string evt, Dictionary<string, object> data)
     {
-        await client.EmitAsync("messageUnity", new Dictionary<string, object> { { "event", evt }, { "data", data } });
+        try
+        {
+            await client.EmitAsync("messageUnity", new Dictionary<string, object> { { "event", evt }, { "data", data } });
+        }
+        catch (Exception e)
+        {
+            Debug.LogError(e);
+        }
     }
 
     private void OnDestroy()
