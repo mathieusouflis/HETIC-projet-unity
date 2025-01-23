@@ -34,7 +34,35 @@ public class WS : MonoBehaviour
                         string evt = eventSent.GetString();
                         Debug.Log(evt);
 
-                        if (evt == "hit")
+                        if (evt == "rotate")
+                        {
+                            UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                            {
+                                var player = GameObject.Find("Player2");
+                                if (player != null)
+                                {
+                                    if (jsonObject.TryGetProperty("data", out JsonElement dataSent))
+                                    {
+                                        if (dataSent.TryGetProperty("axe", out JsonElement axeSent))
+                                        {
+                                            if (dataSent.TryGetProperty("newCord", out JsonElement newCordSent))
+                                            {
+                                                var cameraController = player.transform.Find("Camera")
+                                                    .GetComponent<CameraController>();
+                                                if (axeSent.GetString() == "x")
+                                                {
+                                                    cameraController.RotateX(newCordSent.GetSingle());
+                                                }
+                                                else if (axeSent.GetString() == "y")
+                                                {
+                                                    cameraController.RotateY(newCordSent.GetSingle());
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        }else if (evt == "hit")
                         {
                             UnityMainThreadDispatcher.Instance().Enqueue(() =>
                             {
@@ -56,9 +84,7 @@ public class WS : MonoBehaviour
                                     Debug.LogError("Player2 GameObject not found.");
                                 }
                             });
-                        }
-                        
-                        if (evt == "shoot")
+                        }else if (evt == "shoot")
                         {
                                 UnityMainThreadDispatcher.Instance().Enqueue(() =>
                                 {
@@ -80,9 +106,7 @@ public class WS : MonoBehaviour
                                         Debug.LogError("Player2 GameObject not found.");
                                     }
                                 });
-                        }
-                        
-                        if (evt == "jump")
+                        }else if (evt == "jump")
                         {
                                 UnityMainThreadDispatcher.Instance().Enqueue(() =>
                                 {
