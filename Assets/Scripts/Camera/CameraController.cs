@@ -14,6 +14,7 @@ public class CameraController : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
+        if (!canTurn) return;
         float newY = -Input.GetAxis("Mouse Y") * 10f;
         float newX = Input.GetAxis("Mouse X") * 10f;
         float currentX = transform.localRotation.eulerAngles.x;
@@ -21,8 +22,21 @@ public class CameraController : MonoBehaviour
 
         if (currentX + newY <= 55f && currentX + newY >= -72f)
         {
-            transform.Rotate(newY, 0f, 0f); // Rotation sur l'axe X
-        } 
-        transform.parent.Rotate(0f, newX, 0f);
+            RotateX(newY);
+        }
+
+        RotateY(newX);
+    }
+
+    public void RotateX(float newY)
+    {
+        if(canTurn) GameObject.Find("Game Values").GetComponent<WS>().SendMessage("rotate", new Dictionary<string, object> {{"axe", "X"}, {"newCord", newY}});
+        transform.Rotate(newY, 0f, 0f); // Rotation sur l'axe X
+    }
+    
+    public void RotateY(float newX)
+    {
+        if(canTurn) GameObject.Find("Game Values").GetComponent<WS>().SendMessage("rotate", new Dictionary<string, object> {{"axe", "Y"}, {"newCord", newX}});
+        transform.parent.Rotate(0f, newX, 0f); // Rotation sur l'axe Y
     }
 }
