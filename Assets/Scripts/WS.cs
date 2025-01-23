@@ -41,25 +41,47 @@ public class WS : MonoBehaviour
                                 var player = GameObject.Find("Player2");
                                 if (player != null)
                                 {
-                                    if (jsonObject.TryGetProperty("data", out JsonElement dataSent))
+                                    var camera = player.transform.Find("Camera");
+                                    if (camera != null)
                                     {
-                                        if (dataSent.TryGetProperty("axe", out JsonElement axeSent))
+                                        var cameraController = camera.GetComponent<CameraController>();
+                                        if (cameraController != null)
                                         {
-                                            if (dataSent.TryGetProperty("newCord", out JsonElement newCordSent))
+                                            if (jsonObject.TryGetProperty("data", out JsonElement dataSent))
                                             {
-                                                var cameraController = player.transform.Find("Camera")
-                                                    .GetComponent<CameraController>();
-                                                if (axeSent.GetString() == "x")
+                                                if (dataSent.TryGetProperty("axe", out JsonElement axeSent))
                                                 {
-                                                    cameraController.RotateX(newCordSent.GetSingle());
-                                                }
-                                                else if (axeSent.GetString() == "y")
-                                                {
-                                                    cameraController.RotateY(newCordSent.GetSingle());
+                                                    if (dataSent.TryGetProperty("newCord", out JsonElement newCordSent))
+                                                    {
+                                                        Debug.Log(axeSent.GetString());
+                                                        if (axeSent.GetString() == "x")
+                                                        {
+                                                            Debug.Log("x");
+
+                                                            cameraController.RotateX(newCordSent.GetSingle());
+                                                        }
+                                                        else if (axeSent.GetString() == "y")
+                                                        {
+                                                            Debug.Log("y");
+                                                            cameraController.RotateY(newCordSent.GetSingle());
+                                                        }
+                                                    }
                                                 }
                                             }
                                         }
+                                        else
+                                        {
+                                            Debug.LogError("CameraController component not found on Camera.");
+                                        }
                                     }
+                                    else
+                                    {
+                                        Debug.LogError("Camera GameObject not found under Player2.");
+                                    }
+                                }
+                                else
+                                {
+                                    Debug.LogError("Player2 GameObject not found.");
                                 }
                             });
                         }else if (evt == "hit")
@@ -189,7 +211,6 @@ public class WS : MonoBehaviour
 
     public async void SendMessage(string evt, Dictionary<string, object> data)
     {
-        Debug.Log("Sending " + evt);
         await client.EmitAsync("messageUnity", new Dictionary<string, object> { { "event", evt }, { "data", data } });
     }
 

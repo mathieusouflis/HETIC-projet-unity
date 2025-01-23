@@ -30,13 +30,13 @@ public class CameraController : MonoBehaviour
 
     public void RotateX(float newY)
     {
-        if(canTurn) GameObject.Find("Game Values").GetComponent<WS>().SendMessage("rotate", new Dictionary<string, object> {{"axe", "X"}, {"newCord", newY}});
+        if(canTurn) GameObject.Find("Game Values").GetComponent<WS>().SendMessage("rotate", new Dictionary<string, object> {{"axe", "x"}, {"newCord", newY}});
         transform.Rotate(newY, 0f, 0f); // Rotation sur l'axe X
     }
     
     public void RotateY(float newX)
     {
-        if(canTurn) GameObject.Find("Game Values").GetComponent<WS>().SendMessage("rotate", new Dictionary<string, object> {{"axe", "Y"}, {"newCord", newX}});
+        if(canTurn) GameObject.Find("Game Values").GetComponent<WS>().SendMessage("rotate", new Dictionary<string, object> {{"axe", "y"}, {"newCord", newX}});
         transform.parent.Rotate(0f, newX, 0f); // Rotation sur l'axe Y
     }
 }
