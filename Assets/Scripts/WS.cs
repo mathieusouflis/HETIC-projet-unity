@@ -66,7 +66,7 @@ public class WS : MonoBehaviour
                         {
                             UnityMainThreadDispatcher.Instance().Enqueue(() =>
                             {
-                                var player = GameObject.Find("Player2");
+                                var player = GameObject.Find("Player");
                                 if (player != null)
                                 {
                                     var playerController = player.GetComponent<PlayerControler>();
