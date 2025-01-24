@@ -14,6 +14,7 @@ public class PlayerControler : MonoBehaviour
     public float playerSpeed = 2f;
     private bool _isGrounded;
     public bool canMove = true;
+    public AudioSource death;
     // Start is called before the first frame update
     void Start()
     {
@@ -116,6 +117,8 @@ public class PlayerControler : MonoBehaviour
             else
             {
                 GameObject.Find("Player").GetComponent<PlayerControler>().KillCount++;
+                death.Play();
+
             }
             // On change les compteurs
             this.playerHealth = 100;

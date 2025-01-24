@@ -16,6 +16,13 @@ public class Gun : MonoBehaviour
     public int maxAmo = 30;
     private int amo;
     public bool canShoot = true;
+    public AudioSource fire1;
+    public AudioSource fire2;
+    public AudioSource fire3;
+    public AudioSource fire4;
+    public AudioSource toutch;
+    public AudioSource reload;
+    public AudioSource noAmo;
 
     private GameObject target;
     // Start is called before the first frame update
@@ -43,8 +50,10 @@ public class Gun : MonoBehaviour
 
     public void Shoot()
     {
-        if (amo != 0)
-        {
+        if (amo != 0)   
+        {  
+            var fireSounds = new AudioSource[] { fire1, fire2, fire3, fire4 };
+            fireSounds[UnityEngine.Random.Range(0, fireSounds.Length)].Play();
             Vector3 bulletPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z);
             GameObject bullet = Instantiate(bulletPrefab, bulletPosition, transform.rotation);
             bullet.transform.localPosition = new Vector3(bullet.transform.position.x, bullet.transform.position.y, bullet.transform.position.z);
@@ -53,6 +62,10 @@ public class Gun : MonoBehaviour
             RayCastManager();
             amo--;
             if(canShoot) GameObject.Find("Game Values").GetComponent<WS>().SendMessage("shoot", new Dictionary<string, object> {{"shoot", "shoot"}});
+        }
+        else
+        {
+            noAmo.Play();
         }
     }
 
@@ -65,6 +78,8 @@ public class Gun : MonoBehaviour
         {
             if (hit.collider.name == "Player2")
             {
+                
+                toutch.Play();
                 GameObject.Find("Game Values").GetComponent<WS>().SendMessage("hit", new Dictionary<string, object> {{"hit", "hit"}});
                 target.GetComponent<PlayerControler>().playerHealth -= 10; 
                 target.GetComponent<PlayerControler>().CheckHp();
@@ -77,6 +92,7 @@ public class Gun : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.R))
         {
+            reload.Play();
             Debug.Log("Reload");
             var task = Task.Run(() => Debug.Log("Reloading"));
             if (task.Wait(TimeSpan.FromSeconds(3000)))

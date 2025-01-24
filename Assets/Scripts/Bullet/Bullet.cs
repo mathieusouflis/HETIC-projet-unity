@@ -19,6 +19,6 @@ public class Bullet : MonoBehaviour
 
     private void Move()
     {
-        transform.position += transform.forward * Time.deltaTime * 10f;
+        transform.position += transform.forward * Time.deltaTime * 25f;
     }
 }
