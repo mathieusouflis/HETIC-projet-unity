@@ -125,6 +125,7 @@ public class WS : MonoBehaviour
                                     if (playerController != null)
                                     {
                                         playerController.playerHealth -= 10;
+                                        playerController.CheckHp();
                                     }
                                     else
                                     {
