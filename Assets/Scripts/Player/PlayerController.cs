@@ -69,12 +69,12 @@ public class PlayerControler : MonoBehaviour
         if(canMove) GameObject.Find("Game Values").GetComponent<WS>().SendMessage("jump", new Dictionary<string, object> {{"jump", "jump"}});
         playerRigidbody.velocity = Vector3.up * 3;
     }
+    public void MoveFromPosition(Vector3 position)
+    {
+        transform.position = position;
+    }
     public void MovePlayer(string axis)
     {
-        if (canMove)
-        {
-            GameObject.Find("Game Values").GetComponent<WS>().SendMessage("move", new Dictionary<string, object> {{"axis", axis}});
-        }
         switch (axis)
         {
             case "z":
@@ -90,6 +90,10 @@ public class PlayerControler : MonoBehaviour
                 transform.position += transform.right * Time.deltaTime * playerSpeed;
                 break;
             
+        }
+        if (canMove)
+        {
+            GameObject.Find("Game Values").GetComponent<WS>().SendMessage("move", new Dictionary<string, object> {{"x", transform.position.x}, {"y", transform.position.y}, {"z", transform.position.z}});
         }
         
     }

@@ -1,6 +1,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Net.Sockets;
 using System.Text.Json;
 using PimDeWitte.UnityMainThreadDispatcher;
 using UnityEngine;
@@ -14,16 +15,44 @@ public class WS : MonoBehaviour
 
     async void Start()
     {
-        client = new SocketIOClient.SocketIO("https://test.mathieusouflis.com/");
+        client = new SocketIOClient.SocketIO("http://localhost:3000/");
 
-        client.OnConnected += (sender, e) => { Debug.Log("Connected to server."); };
-
+        client.OnConnected += async (sender, e) =>
+        {
+            Debug.Log("Connected to server.");
+            await client.EmitAsync("newUser", "Unity");
+        };
+        
+        
+        client.On("newUser", response =>
+        {
+            string player = response.GetValue<string>();
+            if (player == "Player2")
+            {
+                UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                {
+                    var player2 = GameObject.Find("Player2");
+                    var player = GameObject.Find("Player");
+                    if (player2 != null)
+                    {
+                        Vector3 player2Position = player2.transform.position;
+                        GameObject.Find("Player2").transform.position = player.transform.position;
+                        GameObject.Find("Player").transform.position = player2Position;
+                    }
+                    else
+                    {
+                        Debug.LogError("Player2 GameObject not found.");
+                    }
+                });
+            }
+        });
+        
         client.On("messageUnity", response =>
         {
             try
             {
                 var responseString = response.ToString();
-                Debug.Log(responseString);
+                //Debug.Log(responseString);
                 var jsonDocument = JsonDocument.Parse(responseString);
                 var jsonArray = jsonDocument.RootElement.EnumerateArray();
 
@@ -33,7 +62,7 @@ public class WS : MonoBehaviour
                     if (jsonObject.TryGetProperty("event", out JsonElement eventSent))
                     {
                         string evt = eventSent.GetString();
-                        Debug.Log(evt);
+                        //Debug.Log(evt);
 
                         if (evt == "rotate")
                         {
@@ -54,16 +83,16 @@ public class WS : MonoBehaviour
                                                 {
                                                     if (dataSent.TryGetProperty("newCord", out JsonElement newCordSent))
                                                     {
-                                                        Debug.Log(axeSent.GetString());
+                                                        //Debug.Log(axeSent.GetString());
                                                         if (axeSent.GetString() == "x")
                                                         {
-                                                            Debug.Log("x");
+                                                            //Debug.Log("x");
 
                                                             cameraController.RotateX(- newCordSent.GetSingle());
                                                         }
                                                         else if (axeSent.GetString() == "y")
                                                         {
-                                                            Debug.Log("y");
+                                                            //Debug.Log("y");
                                                             cameraController.RotateY(- newCordSent.GetSingle());
                                                         }
                                                     }
@@ -155,9 +184,12 @@ public class WS : MonoBehaviour
                         {
                             if (jsonObject.TryGetProperty("data", out JsonElement dataSent))
                             {
-                                if (dataSent.TryGetProperty("axis", out JsonElement axisSent))
+                                if (dataSent.TryGetProperty("x", out JsonElement axisSent))
                                 {
-                                    string message = axisSent.GetString();
+                                    if (dataSent.TryGetProperty("y", out JsonElement axisSentY))
+                                    {
+                                        if (dataSent.TryGetProperty("z", out JsonElement axisSentZ))
+                                        {
                                     UnityMainThreadDispatcher.Instance().Enqueue(() =>
                                     {
                                         var player = GameObject.Find("Player2");
@@ -166,24 +198,7 @@ public class WS : MonoBehaviour
                                             var playerController = player.GetComponent<PlayerControler>();
                                             if (playerController != null)
                                             {
-                                                switch (message)
-                                                {
-                                                    case "z":
-                                                        playerController.MovePlayer("z");
-                                                        break;
-                                                    case "q":
-                                                        playerController.MovePlayer("q");
-                                                        break;
-                                                    case "s":
-                                                        playerController.MovePlayer("s");
-                                                        break;
-                                                    case "d":
-                                                        playerController.MovePlayer("d");
-                                                        break;
-                                                    case "fire":
-                                                        player.transform.Find("Main Camera").transform.Find("Gun").GetComponent<Gun>().Shoot();
-                                                        break;
-                                                }
+                                                playerController.MoveFromPosition(new Vector3(axisSent.GetSingle(), axisSentY.GetSingle(), axisSentZ.GetSingle()));
                                             }
                                             else
                                             {
@@ -195,6 +210,8 @@ public class WS : MonoBehaviour
                                             Debug.LogError("Player2 GameObject not found.");
                                         }
                                     });
+                                        }
+                                    }
                                 }
                             }
                         }
