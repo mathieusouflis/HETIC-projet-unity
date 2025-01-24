@@ -15,7 +15,7 @@ public class WS : MonoBehaviour
 
     async void Start()
     {
-        client = new SocketIOClient.SocketIO("http://localhost:3000/");
+        client = new SocketIOClient.SocketIO("https://test.mathieusouflis.com/");
 
         client.OnConnected += async (sender, e) =>
         {
@@ -88,12 +88,12 @@ public class WS : MonoBehaviour
                                                         {
                                                             //Debug.Log("x");
 
-                                                            cameraController.RotateX(- newCordSent.GetSingle());
+                                                            cameraController.RotateX(newCordSent.GetSingle());
                                                         }
                                                         else if (axeSent.GetString() == "y")
                                                         {
                                                             //Debug.Log("y");
-                                                            cameraController.RotateY(- newCordSent.GetSingle());
+                                                            cameraController.RotateY(newCordSent.GetSingle());
                                                         }
                                                     }
                                                 }
