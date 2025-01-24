@@ -15,6 +15,8 @@ public class PlayerControler : MonoBehaviour
     private bool _isGrounded;
     public bool canMove = true;
     public AudioSource death;
+
+    public AudioSource jump;
     // Start is called before the first frame update
     void Start()
     {
@@ -68,6 +70,7 @@ public class PlayerControler : MonoBehaviour
     public void JumpPlayer()
     {
         if(canMove) GameObject.Find("Game Values").GetComponent<WS>().SendMessage("jump", new Dictionary<string, object> {{"jump", "jump"}});
+        jump.Play( );
         playerRigidbody.velocity = Vector3.up * 3;
     }
     public void MoveFromPosition(Vector3 position)

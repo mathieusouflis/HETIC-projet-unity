@@ -34,7 +34,7 @@ public class WS : MonoBehaviour
                     var player = GameObject.Find("Player");
                     if (player2 != null)
                     {
-                        Vector3 player2Position = player2.transform.position;
+                        var player2Position = player2.transform.position;
                         GameObject.Find("Player2").transform.position = player.transform.position;
                         GameObject.Find("Player").transform.position = player2Position;
                     }
